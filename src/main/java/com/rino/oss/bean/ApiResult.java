@@ -25,6 +25,11 @@ public class ApiResult {
         this.data = data;
     }
 
+    public ApiResult(ErrorCode errorCode) {
+        this.status = errorCode.status();
+        this.message = errorCode.message();
+    }
+
     protected Integer status;
     protected String message;
     protected Object data;
