@@ -95,12 +95,12 @@ public class FileUploadController {
         File file;
         if (StringUtils.isEmpty(path)) file = new File(rootPath);
         else file = new File(rootPath + path);
-        String pattern = request.getParameter("pattern"); // 文件名称过滤
+        String regex = request.getParameter("regex"); // 文件名称过滤
         File[] children;
-        if (StringUtils.isEmpty(pattern)) {
+        if (StringUtils.isEmpty(regex)) {
             children = file.listFiles();
         } else {
-            children = file.listFiles(new MatchFilenameFilter(pattern));
+            children = file.listFiles(new MatchFilenameFilter(regex));
         }
         if (StringUtils.isEmpty(children)) return ApiResult.SUCCESS;
         int len = children.length;

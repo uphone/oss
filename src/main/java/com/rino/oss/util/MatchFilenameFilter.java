@@ -10,14 +10,14 @@ import java.util.regex.Pattern;
  * @author zip
  */
 public class MatchFilenameFilter implements FilenameFilter {
-    private String pattern;
+    private String regex;
 
-    public MatchFilenameFilter(String pattern) {
-        this.pattern = pattern;
+    public MatchFilenameFilter(String regex) {
+        this.regex = regex;
     }
 
     @Override
     public boolean accept(File dir, String name) {
-        return StringUtils.isEmpty(pattern) ? true : Pattern.matches(pattern, name);
+        return StringUtils.isEmpty(regex) ? true : Pattern.matches(regex, name);
     }
 }
