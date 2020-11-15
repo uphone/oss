@@ -32,7 +32,7 @@ import java.util.Set;
  */
 @Slf4j
 @Controller
-public class FileUploadController {
+public class OSSController {
 
     @Value("${rino.platform.rootPath}")
     private String rootPath;
@@ -141,5 +141,20 @@ public class FileUploadController {
         }
         log.info("已删除文件或目录:" + file.getPath());
         return ApiResult.SUCCESS;
+    }
+
+    /**
+     * 询问是否存在某文件
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/ask")
+    public ApiResult askFile(HttpServletRequest request) {
+        String path = request.getParameter("path");
+        if (StringUtils.isEmpty(path)) return new ApiResult(ErrorCode.ERR_10006);
+        File file = new File(rootPath + path);
+        return new ApiResult(file.exists());
     }
 }
