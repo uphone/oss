@@ -157,4 +157,25 @@ public class OSSController {
         File file = new File(rootPath + path);
         return new ApiResult(file.exists());
     }
+
+    /**
+     * 复制文件或目录
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/copy")
+    public ApiResult copy(HttpServletRequest request) throws IOException {
+        String src = request.getParameter("src");
+        String tar = request.getParameter("tar");
+        if (StringUtils.isEmpty(src) || StringUtils.isEmpty(tar)) return new ApiResult(ErrorCode.ERR_10007);
+        File srcFile = new File(rootPath + src);
+        if (!srcFile.exists()) return new ApiResult(ErrorCode.ERR_10004);
+        File tarFile = new File(rootPath + tar);
+        if (srcFile.isDirectory()) FileUtils.copyDirectory(srcFile, tarFile);
+        else FileUtils.copyFile(srcFile, tarFile);
+        log.info("已复制文件或目录:[" + srcFile.getPath() + "] -> [" + tarFile.getPath() + "]");
+        return ApiResult.SUCCESS;
+    }
 }
