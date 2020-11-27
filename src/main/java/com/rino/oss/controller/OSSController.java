@@ -23,6 +23,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -103,6 +105,12 @@ public class OSSController {
             children = file.listFiles(new MatchFilenameFilter(regex));
         }
         if (StringUtils.isEmpty(children)) return ApiResult.SUCCESS;
+
+        // 排序处理
+        String sort = request.getParameter("sort");
+        if (sort != null && "asc".equalsIgnoreCase(sort)) Arrays.sort(children, Comparator.comparing(File::lastModified));
+        else if (sort != null && "desc".equalsIgnoreCase(sort)) Arrays.sort(children, Comparator.comparing(File::lastModified).reversed());
+
         int len = children.length;
         List<OSSFile> ret = new ArrayList<>(len);
         for (int i = 0; i < len; i++) {
