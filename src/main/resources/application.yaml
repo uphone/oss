@@ -1,3 +1,8 @@
 rino:
   platform:
     rootPath: /Users/albert/Downloads/AServer/nginx-apt-biocloud-6094
+spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 200MB
