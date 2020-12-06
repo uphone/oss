@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rino.oss.bean.ApiResult;
 import com.rino.oss.bean.ErrorCode;
 import com.rino.oss.bean.OSSFile;
+import com.rino.oss.util.Compresser;
 import com.rino.oss.util.MatchFilenameFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -185,5 +186,27 @@ public class OSSController {
         else FileUtils.copyFile(srcFile, tarFile);
         log.info("已复制文件或目录:[" + srcFile.getPath() + "] -> [" + tarFile.getPath() + "]");
         return ApiResult.SUCCESS;
+    }
+
+    /**
+     * 压缩目录
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/compress")
+    public ApiResult compress(HttpServletRequest request) throws IOException {
+        String path = request.getParameter("path");
+        String regex = request.getParameter("regex");
+        String fileName = request.getParameter("fileName");
+        if (StringUtils.isEmpty(path)) return new ApiResult(ErrorCode.ERR_10008);
+        Compresser compresser = new Compresser();
+        compresser.setDir(path);
+        compresser.setRegex(regex);
+        compresser.setFileName(fileName);
+        File result = compresser.compress();
+        log.info("已压缩目录:[" + path + "] -> [" + result.getPath() + "]");
+        return new ApiResult(result.getName());
     }
 }
