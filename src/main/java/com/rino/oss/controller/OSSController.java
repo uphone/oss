@@ -195,18 +195,41 @@ public class OSSController {
      * @return
      */
     @ResponseBody
-    @PostMapping("/compress")
-    public ApiResult compress(HttpServletRequest request) throws IOException {
+    @PostMapping("/dir/zip")
+    public ApiResult dirZip(HttpServletRequest request) throws IOException {
         String path = request.getParameter("path");
         String regex = request.getParameter("regex");
         String fileName = request.getParameter("fileName");
         if (StringUtils.isEmpty(path)) return new ApiResult(ErrorCode.ERR_10008);
         Compresser compresser = new Compresser();
+        compresser.setRootPath(rootPath);
         compresser.setDir(path);
         compresser.setRegex(regex);
         compresser.setFileName(fileName);
-        File result = compresser.compress();
-        log.info("已压缩目录:[" + path + "] -> [" + result.getPath() + "]");
-        return new ApiResult(result.getName());
+        OSSFile ossFile = compresser.compressDir();
+        log.info("已压缩目录:[" + path + "] -> [" + ossFile.getPath() + "]");
+        return new ApiResult(ossFile);
+    }
+
+    /**
+     * 压缩多个文件
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/zip")
+    public ApiResult zip(HttpServletRequest request) throws IOException {
+        String[] files = request.getParameterValues("src"); // 压缩的源文件
+        String tar = request.getParameter("tar"); // 压缩文件存储目标位置
+        String regex = request.getParameter("regex"); // 目录中的文件过滤表达式
+        Compresser compresser = new Compresser();
+        compresser.setRootPath(rootPath);
+        compresser.setFileName(tar);
+        compresser.setFiles(files);
+        compresser.setRegex(regex);
+        OSSFile ossFile = compresser.compressFiles();
+        log.info("已压缩[" + files.length + "]个文件 -> [" + ossFile.getPath() + "]");
+        return new ApiResult(ossFile);
     }
 }
