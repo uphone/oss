@@ -274,8 +274,8 @@ public class OSSController {
 
     /**
      * 压缩并下载多个文件或目录
-     * path: 需要下载的目录
-     * regex: 文件名称过滤正则表达式
+     * src: 需要压缩的文件或目录
+     * regex: 文件或目录名称过滤正则表达式
      */
     @PostMapping("/download/files")
     public void downloadFilesZip(HttpServletRequest request, HttpServletResponse response) throws IOException {
