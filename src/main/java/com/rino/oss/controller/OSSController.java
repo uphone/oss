@@ -212,9 +212,9 @@ public class OSSController {
     @PostMapping("/zip/dir")
     public ApiResult zipDir(HttpServletRequest request) throws IOException {
         String path = request.getParameter("path");
+        if (StringUtils.isEmpty(path)) return new ApiResult(ErrorCode.ERR_10008);
         String regex = request.getParameter("regex");
         String fileName = request.getParameter("fileName");
-        if (StringUtils.isEmpty(path)) return new ApiResult(ErrorCode.ERR_10008);
         Compresser compresser = new Compresser();
         compresser.setRootPath(rootPath);
         compresser.setDir(path);
@@ -235,7 +235,9 @@ public class OSSController {
     @PostMapping("/zip/files")
     public ApiResult zipFiles(HttpServletRequest request) throws IOException {
         String[] files = request.getParameterValues("src");
+        if (files == null || files.length == 0) return new ApiResult(ErrorCode.ERR_10011);
         String tar = request.getParameter("tar");
+        if (StringUtils.isEmpty(tar)) return new ApiResult(ErrorCode.ERR_10012);
         String regex = request.getParameter("regex");
         Compresser compresser = new Compresser();
         compresser.setRootPath(rootPath);
@@ -278,7 +280,7 @@ public class OSSController {
     @PostMapping("/download/files")
     public void downloadFilesZip(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String[] files = request.getParameterValues("src");
-        if (StringUtils.isEmpty(files)) {
+        if (files == null || files.length == 0) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             ApiResult ret = new ApiResult(ErrorCode.ERR_10010);
             new ObjectMapper().writeValue(response.getOutputStream(), ret);
