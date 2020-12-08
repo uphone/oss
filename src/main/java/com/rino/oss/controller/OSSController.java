@@ -40,6 +40,10 @@ public class OSSController {
     @Value("${rino.platform.rootPath}")
     private String rootPath;
 
+    /**
+     * 上传文件
+     * path: 上传的文件存储目录
+     */
     @ResponseBody
     @PostMapping("/upload")
     public ApiResult uploadFile(HttpServletRequest request) throws IOException {
@@ -68,6 +72,10 @@ public class OSSController {
         return ApiResult.SUCCESS;
     }
 
+    /**
+     * 文件下载
+     * file: 需要下载的文件
+     */
     @PostMapping("/download")
     public void readFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String filePath = request.getParameter("file");
@@ -91,6 +99,11 @@ public class OSSController {
         log.info("已下载文件:" + file.getPath());
     }
 
+    /**
+     * 获取目录中的所有文件及目录
+     * path: 上级文件目录
+     * regex: 文件过滤正则表达式
+     */
     @ResponseBody
     @PostMapping("/children")
     public ApiResult listChildren(HttpServletRequest request) throws IOException {
@@ -98,7 +111,7 @@ public class OSSController {
         File file;
         if (StringUtils.isEmpty(path)) file = new File(rootPath);
         else file = new File(rootPath + path);
-        String regex = request.getParameter("regex"); // 文件名称过滤
+        String regex = request.getParameter("regex");
         File[] children;
         if (StringUtils.isEmpty(regex)) {
             children = file.listFiles();
@@ -132,6 +145,10 @@ public class OSSController {
         return new ApiResult(ret);
     }
 
+    /**
+     * 删除文件
+     * path: 需要删除的文件
+     */
     @ResponseBody
     @PostMapping("/delete")
     public ApiResult deleteFile(HttpServletRequest request) {
@@ -154,9 +171,7 @@ public class OSSController {
 
     /**
      * 询问是否存在某文件
-     *
-     * @param request
-     * @return
+     * path: 文件路径
      */
     @ResponseBody
     @PostMapping("/ask")
@@ -169,9 +184,8 @@ public class OSSController {
 
     /**
      * 复制文件或目录
-     *
-     * @param request
-     * @return
+     * src: 需要复制的文件或目录
+     * tar: 复制目标
      */
     @ResponseBody
     @PostMapping("/copy")
@@ -190,13 +204,13 @@ public class OSSController {
 
     /**
      * 压缩目录
-     *
-     * @param request
-     * @return
+     * path: 需要压缩的目录
+     * regex: 文件过滤正则表达式
+     * fileName: 存储目标文件
      */
     @ResponseBody
-    @PostMapping("/dir/zip")
-    public ApiResult dirZip(HttpServletRequest request) throws IOException {
+    @PostMapping("/zip/dir")
+    public ApiResult zipDir(HttpServletRequest request) throws IOException {
         String path = request.getParameter("path");
         String regex = request.getParameter("regex");
         String fileName = request.getParameter("fileName");
@@ -212,17 +226,17 @@ public class OSSController {
     }
 
     /**
-     * 压缩多个文件
-     *
-     * @param request
-     * @return
+     * 压缩多个文件:
+     * src: 压缩的源文件
+     * tar: 压缩文件存储目标位置
+     * regex: 目录中的文件过滤表达式
      */
     @ResponseBody
-    @PostMapping("/zip")
-    public ApiResult zip(HttpServletRequest request) throws IOException {
-        String[] files = request.getParameterValues("src"); // 压缩的源文件
-        String tar = request.getParameter("tar"); // 压缩文件存储目标位置
-        String regex = request.getParameter("regex"); // 目录中的文件过滤表达式
+    @PostMapping("/zip/files")
+    public ApiResult zipFiles(HttpServletRequest request) throws IOException {
+        String[] files = request.getParameterValues("src");
+        String tar = request.getParameter("tar");
+        String regex = request.getParameter("regex");
         Compresser compresser = new Compresser();
         compresser.setRootPath(rootPath);
         compresser.setFileName(tar);
@@ -231,5 +245,51 @@ public class OSSController {
         OSSFile ossFile = compresser.compressFiles();
         log.info("已压缩[" + files.length + "]个文件 -> [" + ossFile.getPath() + "]");
         return new ApiResult(ossFile);
+    }
+
+    /**
+     * 压缩并下载目录
+     * path: 需要下载的目录
+     * regex: 文件名称过滤正则表达式
+     */
+    @PostMapping("/download/dir")
+    public void downloadDirZip(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String path = request.getParameter("path");
+        if (StringUtils.isEmpty(path)) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ApiResult ret = new ApiResult(ErrorCode.ERR_10009);
+            new ObjectMapper().writeValue(response.getOutputStream(), ret);
+            return;
+        }
+        String regex = request.getParameter("regex");
+        Compresser compresser = new Compresser();
+        compresser.setRootPath(rootPath);
+        compresser.setDir(path);
+        compresser.setRegex(regex);
+        compresser.downloadDir(response.getOutputStream());
+        log.info("已压缩并下载目录:[" + path + "]");
+    }
+
+    /**
+     * 压缩并下载多个文件或目录
+     * path: 需要下载的目录
+     * regex: 文件名称过滤正则表达式
+     */
+    @PostMapping("/download/files")
+    public void downloadFilesZip(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String[] files = request.getParameterValues("src");
+        if (StringUtils.isEmpty(files)) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ApiResult ret = new ApiResult(ErrorCode.ERR_10010);
+            new ObjectMapper().writeValue(response.getOutputStream(), ret);
+            return;
+        }
+        String regex = request.getParameter("regex");
+        Compresser compresser = new Compresser();
+        compresser.setRootPath(rootPath);
+        compresser.setFiles(files);
+        compresser.setRegex(regex);
+        compresser.downloadFiles(response.getOutputStream());
+        log.info("已压缩[" + files.length + "]个文件或目录并下载");
     }
 }

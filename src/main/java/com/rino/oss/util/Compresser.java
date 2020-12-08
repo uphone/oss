@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -14,6 +15,7 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * @author zip
+ * 命令行压缩: tar -zcvf bak.tar.gz --exclude='_*' 差异结果数量统计
  */
 public class Compresser {
     private Set<String> zipDirKeys = new HashSet<>(16);
@@ -44,7 +46,6 @@ public class Compresser {
         this.fileName = fileName;
     }
 
-
     private OSSFile getZippedOssFile(String compressFileName) {
         File zippedFile = new File(compressFileName.substring(rootPath.length()));
         OSSFile ossFile = new OSSFile();
@@ -55,27 +56,34 @@ public class Compresser {
         return ossFile;
     }
 
+    public void downloadDir(OutputStream outputStream) throws IOException {
+        File file = new File(rootPath + dir);
+        try (ZipOutputStream cos = new ZipOutputStream(outputStream)) {
+            compressFile(cos, file);
+        }
+    }
+
     public OSSFile compressDir() throws IOException {
         File file = new File(rootPath + dir);
         String compressFileName;
         if (StringUtils.isEmpty(this.fileName)) compressFileName = file.getParentFile().getPath() + "/" + file.getName() + ".zip";
         else compressFileName = rootPath + fileName;
-        try (
-                FileOutputStream fos = new FileOutputStream(compressFileName);
-                ZipOutputStream cos = new ZipOutputStream(fos);
-        ) {
-            compressFile(cos, file);
+        try (FileOutputStream fos = new FileOutputStream(compressFileName)) {
+            downloadDir(fos);
         }
         return getZippedOssFile(compressFileName);
     }
 
+    public void downloadFiles(OutputStream outputStream) throws IOException {
+        try (ZipOutputStream cos = new ZipOutputStream(outputStream)) {
+            for (String file : files) compressFile(cos, new File(rootPath + file));
+        }
+    }
+
     public OSSFile compressFiles() throws IOException {
         String compressFileName = rootPath + this.fileName;
-        try (
-                FileOutputStream fos = new FileOutputStream(compressFileName);
-                ZipOutputStream cos = new ZipOutputStream(fos);
-        ) {
-            for (String file : files) compressFile(cos, new File(rootPath + file));
+        try (FileOutputStream fos = new FileOutputStream(compressFileName)) {
+            downloadFiles(fos);
         }
         return getZippedOssFile(compressFileName);
     }
