@@ -46,7 +46,7 @@ public class Compresser {
 
 
     private OSSFile getZippedOssFile(String compressFileName) {
-        File zippedFile = new File(compressFileName);
+        File zippedFile = new File(compressFileName.substring(rootPath.length()));
         OSSFile ossFile = new OSSFile();
         ossFile.setPath(compressFileName);
         ossFile.setDir(false);
@@ -107,15 +107,14 @@ public class Compresser {
 
     public static void main(String[] args) {
         Compresser c = new Compresser();
-        c.setRootPath("/Users/albert/Downloads/P20201201002");
+        c.setRootPath("/Users/albert/Downloads/AServer/nginx-apt-biocloud-6094");
         c.setFiles(new String[]{
-                "/summary.txt",
-                "/Design/Schema",
-                "/Result/Schema/差异结果数量统计/附件3_蛋白质定量和差异分析列表.xlsx",
-                "/Result/Schema/差异结果数量统计/diff_stat.xlsx",
-                "/Result/Schema/差异结果数量统计/High-fat_vs_Control",
-                "/Design/Project_Information.xlsx",
+                "/tool/task/777-4",
+                "/report/html/TMT/TMT-1.html",
+                "/index.html",
+                "/report/4/TMT/P20200601109/Result/Schema/差异结果数量统计"
         });
+        c.setRegex("[^_].*");
         c.setFileName("/aa.zip");
         try {
             c.compressFiles();
