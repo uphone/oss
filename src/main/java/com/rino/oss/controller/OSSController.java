@@ -207,6 +207,7 @@ public class OSSController {
      * path: 需要压缩的目录
      * regex: 文件过滤正则表达式
      * fileName: 存储目标文件
+     * cutPart: 去除路径部分
      */
     @ResponseBody
     @PostMapping("/zip/dir")
@@ -215,11 +216,13 @@ public class OSSController {
         if (StringUtils.isEmpty(path)) return new ApiResult(ErrorCode.ERR_10008);
         String regex = request.getParameter("regex");
         String fileName = request.getParameter("fileName");
+        String cutPart = request.getParameter("cutPart");
         Compresser compresser = new Compresser();
         compresser.setRootPath(rootPath);
         compresser.setDir(path);
         compresser.setRegex(regex);
         compresser.setFileName(fileName);
+        compresser.setCutPart(cutPart);
         OSSFile ossFile = compresser.compressDir();
         log.info("已压缩目录:[" + path + "] -> [" + ossFile.getPath() + "]");
         return new ApiResult(ossFile);
@@ -239,11 +242,13 @@ public class OSSController {
         String tar = request.getParameter("tar");
         if (StringUtils.isEmpty(tar)) return new ApiResult(ErrorCode.ERR_10012);
         String regex = request.getParameter("regex");
+        String cutPart = request.getParameter("cutPart");
         Compresser compresser = new Compresser();
         compresser.setRootPath(rootPath);
         compresser.setFileName(tar);
         compresser.setFiles(files);
         compresser.setRegex(regex);
+        compresser.setCutPart(cutPart);
         OSSFile ossFile = compresser.compressFiles();
         log.info("已压缩[" + files.length + "]个文件 -> [" + ossFile.getPath() + "]");
         return new ApiResult(ossFile);
@@ -264,10 +269,12 @@ public class OSSController {
             return;
         }
         String regex = request.getParameter("regex");
+        String cutPart = request.getParameter("cutPart");
         Compresser compresser = new Compresser();
         compresser.setRootPath(rootPath);
         compresser.setDir(path);
         compresser.setRegex(regex);
+        compresser.setCutPart(cutPart);
         compresser.downloadDir(response.getOutputStream());
         log.info("已压缩并下载目录:[" + path + "]");
     }
@@ -287,10 +294,12 @@ public class OSSController {
             return;
         }
         String regex = request.getParameter("regex");
+        String cutPart = request.getParameter("cutPart");
         Compresser compresser = new Compresser();
         compresser.setRootPath(rootPath);
         compresser.setFiles(files);
         compresser.setRegex(regex);
+        compresser.setCutPart(cutPart);
         compresser.downloadFiles(response.getOutputStream());
         log.info("已压缩[" + files.length + "]个文件或目录并下载");
     }

@@ -24,6 +24,7 @@ public class Compresser {
     private String dir;
     private String regex;
     private String fileName;
+    private String cutPart;
     private String[] files;
 
     public void setRootPath(String rootPath) {
@@ -44,6 +45,10 @@ public class Compresser {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public void setCutPart(String cutPart) {
+        this.cutPart = cutPart;
     }
 
     private OSSFile getZippedOssFile(String compressFileName) {
@@ -102,10 +107,14 @@ public class Compresser {
             String dir = filePath.substring(0, filePath.lastIndexOf("/")).trim();
             if (!StringUtils.isEmpty(dir) && !zipDirKeys.contains(dir)) {
                 zipDirKeys.add(dir);
-                cos.putNextEntry(new ZipEntry(dir + "/"));
+                String dirEntry = dir + "/";
+                if (!StringUtils.isEmpty(this.cutPart)) dirEntry = dirEntry.substring(this.cutPart.length());
+                cos.putNextEntry(new ZipEntry(dirEntry));
                 cos.closeEntry();
             }
-            cos.putNextEntry(new ZipEntry(filePath));
+            String fileEntry = filePath;
+            if (!StringUtils.isEmpty(this.cutPart)) fileEntry = fileEntry.substring(this.cutPart.length());
+            cos.putNextEntry(new ZipEntry(fileEntry));
             try (FileInputStream in = new FileInputStream(file);) {
                 int len;
                 while ((len = in.read()) != -1) cos.write(len);
