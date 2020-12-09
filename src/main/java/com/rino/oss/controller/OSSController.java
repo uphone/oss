@@ -233,6 +233,7 @@ public class OSSController {
      * src: 压缩的源文件
      * tar: 压缩文件存储目标位置
      * regex: 目录中的文件过滤表达式
+     * cutPart: 去除路径部分
      */
     @ResponseBody
     @PostMapping("/zip/files")
@@ -258,6 +259,7 @@ public class OSSController {
      * 压缩并下载目录
      * path: 需要下载的目录
      * regex: 文件名称过滤正则表达式
+     * cutPart: 去除路径部分
      */
     @PostMapping("/download/dir")
     public void downloadDirZip(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -283,6 +285,7 @@ public class OSSController {
      * 压缩并下载多个文件或目录
      * src: 需要压缩的文件或目录
      * regex: 文件或目录名称过滤正则表达式
+     * cutPart: 去除路径部分
      */
     @PostMapping("/download/files")
     public void downloadFilesZip(HttpServletRequest request, HttpServletResponse response) throws IOException {
