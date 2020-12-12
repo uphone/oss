@@ -183,6 +183,21 @@ public class OSSController {
     }
 
     /**
+     * 创建目录
+     * path: 目录路径
+     */
+    @ResponseBody
+    @PostMapping("/mkdir")
+    public ApiResult mkDir(HttpServletRequest request) throws IOException {
+        String path = request.getParameter("path");
+        if (StringUtils.isEmpty(path)) return new ApiResult(ErrorCode.ERR_10013);
+        File file = new File(rootPath + path);
+        if (file.exists()) return new ApiResult(ErrorCode.ERR_10014);
+        FileUtils.forceMkdir(file);
+        return ApiResult.SUCCESS;
+    }
+
+    /**
      * 复制文件或目录
      * src: 需要复制的文件或目录
      * tar: 复制目标
