@@ -1,0 +1,8 @@
+rino:
+  platform:
+    rootPath: /cloud/material
+spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 200MB

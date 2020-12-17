@@ -22,6 +22,7 @@ public class ApiResult {
     }
 
     public ApiResult(Object data) {
+        this.status = 1;
         this.data = data;
     }
 

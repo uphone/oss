@@ -47,6 +47,37 @@
         </dependency>
     </dependencies>
 
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <profiles.active>dev</profiles.active>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>apt-biocloud-material</id>
+            <properties>
+                <profiles.active>apt-biocloud-material</profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>apt-biocloud-analyse</id>
+            <properties>
+                <profiles.active>apt-biocloud-analyse</profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>rino-dsf-module</id>
+            <properties>
+                <profiles.active>rino-dsf-module</profiles.active>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -54,6 +85,20 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>static/**</include>
+                    <include>templates/**</include>
+                    <include>messages*.*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources/${profiles.active}</directory>
+            </resource>
+        </resources>
     </build>
 
 </project>
