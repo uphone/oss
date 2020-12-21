@@ -73,6 +73,29 @@ public class OSSController {
     }
 
     /**
+     * 写入文件内容到指定文件
+     * file: 写入的文件存储目录
+     * content: 写入的文件内容
+     * override: 是否覆盖已有文件(默认为false)
+     */
+    @ResponseBody
+    @PostMapping("/write")
+    public ApiResult writeFile(HttpServletRequest request) throws IOException {
+        // 判断path参数
+        String file = request.getParameter("file");
+        if (StringUtils.isEmpty(file)) return new ApiResult(ErrorCode.ERR_10015);
+        String content = request.getParameter("content");
+        if (StringUtils.isEmpty(content)) return new ApiResult(ErrorCode.ERR_10016);
+        String overrideStr = request.getParameter("override");
+        boolean override = overrideStr != null && (overrideStr.equalsIgnoreCase("true") || overrideStr.equalsIgnoreCase("1"));
+        File writeFile = new File(rootPath + file);
+        if (writeFile.exists() && !override) return new ApiResult(ErrorCode.ERR_10017);
+        FileUtils.writeStringToFile(writeFile, content);
+        log.info("已写入文件:" + writeFile.getPath());
+        return ApiResult.SUCCESS;
+    }
+
+    /**
      * 文件下载
      * file: 需要下载的文件
      */
