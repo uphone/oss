@@ -206,6 +206,31 @@ public class OSSController {
     }
 
     /**
+     * 修改文件或目录的最后修改时间
+     * path: 文件或目录
+     * time: 最后修改时间,默认为当前系统时间
+     */
+    @ResponseBody
+    @PostMapping("/update")
+    public ApiResult update(HttpServletRequest request) {
+        String path = request.getParameter("path");
+        if (StringUtils.isEmpty(path)) return new ApiResult(ErrorCode.ERR_10018);
+        File file = new File(rootPath + path);
+        if (!file.exists()) return new ApiResult(ErrorCode.ERR_10019);
+        String time = request.getParameter("time");
+        long lm = System.currentTimeMillis();
+        if (!StringUtils.isEmpty(time)) {
+            try {
+                lm = Long.parseLong(time);
+            } catch (NumberFormatException ex) {
+                return new ApiResult(ErrorCode.ERR_10020);
+            }
+        }
+        file.setLastModified(lm);
+        return ApiResult.SUCCESS;
+    }
+
+    /**
      * 创建目录
      * path: 目录路径
      */

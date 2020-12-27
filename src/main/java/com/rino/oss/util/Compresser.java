@@ -123,20 +123,5 @@ public class Compresser {
     }
 
     public static void main(String[] args) {
-        Compresser c = new Compresser();
-        c.setRootPath("/Users/albert/Downloads/AServer/nginx-apt-biocloud-6094");
-        c.setFiles(new String[]{
-                "/tool/task/777-4",
-                "/report/html/TMT/TMT-1.html",
-                "/index.html",
-                "/report/4/TMT/P20200601109/Result/Schema/差异结果数量统计"
-        });
-        c.setRegex("[^_].*");
-        c.setFileName("/aa.zip");
-        try {
-            c.compressFiles();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
