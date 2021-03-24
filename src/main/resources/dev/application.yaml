@@ -1,6 +1,6 @@
 rino:
   platform:
-    rootPath: /Users/albert/Downloads/AServer/nginx-apt-biocloud-6094
+    rootPath: /Users/albert/Downloads/VmShare
 spring:
   servlet:
     multipart:
