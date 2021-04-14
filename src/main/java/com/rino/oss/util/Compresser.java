@@ -71,7 +71,7 @@ public class Compresser {
     public OSSFile compressDir() throws IOException {
         File file = new File(rootPath + dir);
         String compressFileName;
-        if (StringUtils.isEmpty(this.fileName)) compressFileName = file.getParentFile().getPath() + "/" + file.getName() + ".zip";
+        if (StringUtils.isEmpty(fileName)) compressFileName = file.getParentFile().getPath() + "/" + file.getName() + ".zip";
         else compressFileName = rootPath + fileName;
         try (FileOutputStream fos = new FileOutputStream(compressFileName)) {
             downloadDir(fos);
@@ -86,7 +86,7 @@ public class Compresser {
     }
 
     public OSSFile compressFiles() throws IOException {
-        String compressFileName = rootPath + this.fileName;
+        String compressFileName = rootPath + fileName;
         try (FileOutputStream fos = new FileOutputStream(compressFileName)) {
             downloadFiles(fos);
         }
@@ -103,6 +103,7 @@ public class Compresser {
             }
             for (int i = 0; i < children.length; i++) compressFile(cos, children[i]);
         } else {
+            if (file.getPath().equals(rootPath + fileName)) return;
             String filePath = file.getPath().substring(rootPath.length());
             String dir = filePath.substring(0, filePath.lastIndexOf("/")).trim();
             if (!StringUtils.isEmpty(dir) && !zipDirKeys.contains(dir)) {
